@@ -1,7 +1,9 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field
+from shortuuid import uuid
+
 
 class Feature(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: str = Field(default_factory=lambda: uuid(), primary_key=True)
     geometry: str  # GeoJSON как строка
-    type: str     # Point, LineString, Polygon
+    type: str  # Point, LineString, Polygon
