@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика и последние объекты</title>
+</head>
+<body>
+    <h1>Статистика</h1>
+    <ul>
+        {% for key, value in stats.items() %}
+            <li>{{ key }}: {{ value }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Последние объекты</h2>
+    <ul>
+        {% for feature in features %}
+            <li>ID: {{ feature.id }}, Тип: {{ feature.type }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html> 
