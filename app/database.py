@@ -20,7 +20,7 @@ def get_all_features(session: Session) -> Sequence[Feature]:
     return session.exec(select(Feature)).all()
 
 
-def delete_feature_by_id(session: Session, feature_id: int) -> bool:
+def delete_feature_by_id(session: Session, feature_id: str) -> bool:
     feature = session.get(Feature, feature_id)
     if not feature:
         return False
