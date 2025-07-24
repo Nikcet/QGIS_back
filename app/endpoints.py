@@ -22,16 +22,23 @@ router = APIRouter()
 
 @router.post("/features")
 def add_feature(feature: FeatureCreate, session: Session = Depends(get_session)):
+    existing = session.exec(
+        select(FeatureModel).where(FeatureModel.geometry == str(feature.geometry))
+    ).first()
+    if existing:
+        return
 
-    existing = session.exec(select(FeatureModel).where(FeatureModel.geometry == str(feature.geometry))).first()
-    if existing: return 
-    
-    feature_json = json.loads(feature.geometry)
-    type_ = feature_json['type']
+    if not feature.geometry:
+        raise HTTPException(status_code=400, detail="Geometry is required")
+    try:
+        feature_json = json.loads(feature.geometry)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid geometry JSON")
+    type_ = feature_json.get("type")
+    if not type_:
+        raise HTTPException(status_code=400, detail="Type is required in geometry")
 
-    db_feature = create_feature(
-        session, geometry=str(feature.geometry), type_=type_
-    )
+    db_feature = create_feature(session, geometry=str(feature.geometry), type_=type_)
 
     logger.info(f"Post db feature: {db_feature}")
     return {"id": db_feature.id}
