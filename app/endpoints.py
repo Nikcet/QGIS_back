@@ -32,12 +32,16 @@ def add_feature(feature: FeatureCreate, session: Session = Depends(get_session))
         raise HTTPException(status_code=400, detail="Geometry is required")
     try:
         feature_json = json.loads(feature.geometry)
+        if feature_json is None:
+            raise
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid geometry JSON")
-    type_ = feature_json.get("type")
-    if not type_:
+    
+    try:
+        type_ = feature_json.get("type")
+    except Exception as e:
         raise HTTPException(status_code=400, detail="Type is required in geometry")
-
+    
     db_feature = create_feature(session, geometry=str(feature.geometry), type_=type_)
 
     logger.info(f"Post db feature: {db_feature}")
