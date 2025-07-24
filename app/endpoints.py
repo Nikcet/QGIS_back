@@ -25,9 +25,12 @@ def add_feature(feature: FeatureCreate, session: Session = Depends(get_session))
 
     existing = session.exec(select(FeatureModel).where(FeatureModel.geometry == str(feature.geometry))).first()
     if existing: return 
+    
+    feature_json = json.loads(feature.geometry)
+    type_ = feature_json['type']
 
     db_feature = create_feature(
-        session, geometry=str(feature.geometry), type_=feature.type
+        session, geometry=str(feature.geometry), type_=type_
     )
 
     logger.info(f"Post db feature: {db_feature}")
@@ -53,7 +56,7 @@ def get_features(session: Session = Depends(get_session)):
 
 
 @router.delete("/features/{feature_id}")
-def delete_feature(feature_id: int, session: Session = Depends(get_session)):
+def delete_feature(feature_id: str, session: Session = Depends(get_session)):
     ok = delete_feature_by_id(session, feature_id)
     if not ok:
         raise HTTPException(status_code=404, detail="Feature not found")
